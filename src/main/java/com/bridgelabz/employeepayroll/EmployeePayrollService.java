@@ -17,7 +17,6 @@ public class EmployeePayrollService {
 		int result = new EmployeePayrollDBService().updateEmployeeDataUsingStatement(name, salary);
 		if (result == 0)
 			return;
-		employeePayrollList = employeePayrollDBService.readData();
 		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
 		if (employeePayrollData != null)
 			employeePayrollData.setEmployeeSalary(salary);
@@ -29,13 +28,14 @@ public class EmployeePayrollService {
 		System.out.println(result);
 		if (result == 0)
 			return;
-		employeePayrollList = employeePayrollDBService.readData();
+
 		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
 		if (employeePayrollData != null)
 			employeePayrollData.setEmployeeSalary(salary);
 	}
 
-	public EmployeePayrollData getEmployeePayrollData(String name) {
+	public EmployeePayrollData getEmployeePayrollData(String name) throws EmployeePayrollServiceException {
+		employeePayrollList = employeePayrollDBService.readData();
 		return this.employeePayrollList.stream()
 				.filter(employeePayrollObject -> employeePayrollObject.getEmployeeName().equals(name)).findFirst()
 				.orElse(null);
@@ -53,9 +53,14 @@ public class EmployeePayrollService {
 		return employeePayrollList;
 	}
 
-	public Map<String, Double> arithematicOperationByGender(String operation)
-			throws EmployeePayrollServiceException {
+	public Map<String, Double> arithematicOperationByGender(String operation) throws EmployeePayrollServiceException {
 		return this.employeePayrollDBService.arithematicOperationsOnEmployeePayroll(operation);
+	}
+
+	public EmployeePayrollData addNewEmployeeToPayrollDatabase(String name, String gender, double salary, LocalDate start)
+			throws EmployeePayrollServiceException {
+		return this.employeePayrollDBService.addEmployee(name, gender, salary, start);
+
 	}
 
 }

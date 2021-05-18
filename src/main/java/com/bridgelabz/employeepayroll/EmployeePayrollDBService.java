@@ -1,6 +1,7 @@
 package com.bridgelabz.employeepayroll;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -175,4 +176,29 @@ public class EmployeePayrollDBService {
 
 	}
 
+	public EmployeePayrollData addEmployee(String name, String gender, double salary, LocalDate start)
+			throws EmployeePayrollServiceException {
+		int employeeId = -1;
+		EmployeePayrollData employeePayrollData = null;
+		String sql = String.format(
+				"INSERT INTO employee_payroll(name,Gender,salary,start) " + "VALUES ( '%s', '%s', %s, '%s' )", name,
+				gender, salary, Date.valueOf(start));
+		try (Connection connection = this.getConnection()) {
+			Statement statement = connection.createStatement();
+			int rowsAffected = statement.executeUpdate(sql, statement.RETURN_GENERATED_KEYS);
+			if (rowsAffected == 1) {
+				ResultSet resultSet = statement.getGeneratedKeys();
+				if (resultSet.next())
+					employeeId = resultSet.getInt(1);
+			}
+			employeePayrollData = new EmployeePayrollData(employeeId, name, gender, salary, start);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new EmployeePayrollServiceException(
+					EmployeePayrollServiceException.EmployeePayrollExceptionType.ADDING_NEW_EMPLOYEE_ISSUE,
+					"Unable to Add new Employee!!");
+
+		}
+		return employeePayrollData;
+	}
 }

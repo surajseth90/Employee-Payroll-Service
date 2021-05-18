@@ -18,7 +18,7 @@ public class EmployeePayrollDBServiceTest {
 	public void givenEmployeePayrollDB_WhenRetrieve_ShouldReturnSize() throws EmployeePayrollServiceException {
 		List<EmployeePayrollData> employeePayrollData;
 		employeePayrollData = employeePayrollService.readEmployeePayrollData();
-		Assert.assertEquals(3, employeePayrollData.size());
+		Assert.assertEquals(4, employeePayrollData.size());
 	}
 
 	@Test
@@ -49,6 +49,15 @@ public class EmployeePayrollDBServiceTest {
 	@Test
 	public void givenEmployeeData_WhenPerformArithematicOperation_ShouldReturnResult() throws EmployeePayrollServiceException {
 		Map<String ,Double> result= employeePayrollService.arithematicOperationByGender("SUM");
-		Assert.assertEquals(1200000,result.get("M"),0.0);
+		Assert.assertEquals(1500000,result.get("M"),0.0);
 	}
+	
+	 @Test
+	    public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() throws EmployeePayrollServiceException {
+	    	EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+	    	employeePayrollService.readEmployeePayrollData();
+	    	employeePayrollService.addNewEmployeeToPayrollDatabase("Harry","M", 150000.0, LocalDate.now());
+	        boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Harry");
+	        Assert.assertTrue(result);
+	    }
 }

@@ -6,6 +6,7 @@ public class EmployeePayrollData {
 
 	private int employeeID;
 	private String employeeName;
+	private String employeeGender;
 	private double employeeSalary;
 	private LocalDate employeeJoiningDate;
 
@@ -14,6 +15,15 @@ public class EmployeePayrollData {
 		super();
 		this.employeeID = employeeID;
 		this.employeeName = employeeName;
+		this.employeeSalary = employeeSalary;
+		this.employeeJoiningDate = employeeJoiningDate;
+	}
+
+	public EmployeePayrollData(int employeeId2, String name, String gender, double salary, LocalDate start) {
+		super();
+		this.employeeID = employeeID;
+		this.employeeName = employeeName;
+		this.employeeGender=gender;
 		this.employeeSalary = employeeSalary;
 		this.employeeJoiningDate = employeeJoiningDate;
 	}
@@ -32,6 +42,13 @@ public class EmployeePayrollData {
 
 	public void setEmployeeName(String employeeName) {
 		this.employeeName = employeeName;
+	}
+	public String getEmployeeGender() {
+		return employeeGender;
+	}
+
+	public void setEmployeeGender(String employeeGender) {
+		this.employeeGender = employeeGender;
 	}
 
 	public double getEmployeeSalary() {
@@ -52,7 +69,7 @@ public class EmployeePayrollData {
 
 	@Override
 	public String toString() {
-		return "EmployeePayroll [employeeID=" + employeeID + ", employeeName=" + employeeName + ", employeeSalary="
+		return "EmployeePayroll [employeeID=" + employeeID + ", employeeName=" + employeeName + ",employeeGender"+employeeGender+", employeeSalary="
 				+ employeeSalary + ", employeeJoiningDate=" + employeeJoiningDate + "]";
 	}
 
