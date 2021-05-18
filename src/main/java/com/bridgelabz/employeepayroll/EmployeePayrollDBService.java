@@ -14,10 +14,9 @@ public class EmployeePayrollDBService {
 
 	private static EmployeePayrollDBService employeePayrollDBService;
 	private PreparedStatement preparedStatement;
-	
 
 	public EmployeePayrollDBService() {
-		
+
 	}
 
 	private Connection getConnection() throws SQLException {
@@ -52,25 +51,14 @@ public class EmployeePayrollDBService {
 		return employeePayrollList;
 	}
 
-	public int updateEmployeeDataUsingStatement(String name, double salary) throws EmployeePayrollServiceException {
-		String sql = String.format("UPDATE employee_payroll SET salary=%.2f WHERE name='%s'", salary, name);
-		try (Connection connection = this.getConnection()) {
-			Statement statement = connection.createStatement();
-			int rowsAffected = statement.executeUpdate(sql);
-			return rowsAffected;
-		} catch (SQLException e) {
-			throw new EmployeePayrollServiceException(
-					EmployeePayrollServiceException.EmployeePayrollExceptionType.UPDATION_ISSUE,
-				                	"Unable To update data in database");
-		}
-	}
-
 	public List<EmployeePayrollData> getEmployeePayrollDataFromDB(String name) throws EmployeePayrollServiceException {
-		String sql = String.format("SELECT * FROM employee_payroll WHERE name='%s'", name);
 		List<EmployeePayrollData> employeePayrollList = new ArrayList<EmployeePayrollData>();
-		try (Connection connection = this.getConnection()) {
-			Statement statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery(sql);
+		if (this.preparedStatement == null) {
+			this.preparedStatementForRetrieveDataUsingName();
+		}
+		try {
+			preparedStatement.setString(1, name);
+			ResultSet resultSet = preparedStatement.executeQuery();
 			while (resultSet.next()) {
 				int id = resultSet.getInt("id");
 				String Employeename = resultSet.getString("name");
@@ -81,8 +69,32 @@ public class EmployeePayrollDBService {
 			return employeePayrollList;
 		} catch (SQLException e) {
 			throw new EmployeePayrollServiceException(
+					EmployeePayrollServiceException.EmployeePayrollExceptionType.PREPARE_STATEMENT_ISSUE,
+					"Unable to get data by prepared statement");
+		}
+	}
+
+	private void preparedStatementForRetrieveDataUsingName() throws EmployeePayrollServiceException {
+		try (Connection connection = this.getConnection()) {
+			String sql = "SELECT * FROM employee_payroll WHERE name=?";
+			this.preparedStatement = connection.prepareStatement(sql);
+		} catch (SQLException e) {
+			throw new EmployeePayrollServiceException(
+					EmployeePayrollServiceException.EmployeePayrollExceptionType.PREPARE_STATEMENT_ISSUE,
+					"Unable to get data by prepared statement");
+		}
+	}
+
+	public int updateEmployeeDataUsingStatement(String name, double salary) throws EmployeePayrollServiceException {
+		String sql = String.format("UPDATE employee_payroll SET salary=%.2f WHERE name='%s'", salary, name);
+		try (Connection connection = this.getConnection()) {
+			Statement statement = connection.createStatement();
+			int rowsAffected = statement.executeUpdate(sql);
+			return rowsAffected;
+		} catch (SQLException e) {
+			throw new EmployeePayrollServiceException(
 					EmployeePayrollServiceException.EmployeePayrollExceptionType.UPDATION_ISSUE,
-									"Unable to get data from database");
+					"Unable To update data in database");
 		}
 	}
 
@@ -99,7 +111,7 @@ public class EmployeePayrollDBService {
 		} catch (SQLException e) {
 			throw new EmployeePayrollServiceException(
 					EmployeePayrollServiceException.EmployeePayrollExceptionType.PREPARE_STATEMENT_ISSUE,
-									"Unable to get data by prepared statement");
+					"Unable to get data by prepared statement");
 		}
 	}
 
@@ -110,8 +122,9 @@ public class EmployeePayrollDBService {
 		} catch (SQLException e) {
 			throw new EmployeePayrollServiceException(
 					EmployeePayrollServiceException.EmployeePayrollExceptionType.PREPARE_STATEMENT_ISSUE,
-									"Unable to get data by prepared statement");
+					"Unable to get data by prepared statement");
 		}
 
 	}
+
 }
