@@ -1,5 +1,7 @@
 package com.bridgelabz.employeepayroll;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeePayrollService {
@@ -19,8 +21,9 @@ public class EmployeePayrollService {
 		if (employeePayrollData != null)
 			employeePayrollData.setEmployeeSalary(salary);
 	}
-	
-	public void updateEmployeeSalaryUsingPrepareStatement(String name, double salary) throws EmployeePayrollServiceException {
+
+	public void updateEmployeeSalaryUsingPrepareStatement(String name, double salary)
+			throws EmployeePayrollServiceException {
 		int result = new EmployeePayrollDBService().updateEmployeePayrollDataUsingPreparedStatement(name, salary);
 		if (result == 0)
 			return;
@@ -29,15 +32,21 @@ public class EmployeePayrollService {
 			employeePayrollData.setEmployeeSalary(salary);
 	}
 
-	private EmployeePayrollData getEmployeePayrollData(String name) {
+	public EmployeePayrollData getEmployeePayrollData(String name) {
 		return this.employeePayrollList.stream()
-						.filter(employeePayrollObject -> employeePayrollObject.getEmployeeName().equals(name))
-						.findFirst()
-						.orElse(null);
+				.filter(employeePayrollObject -> employeePayrollObject.getEmployeeName().equals(name)).findFirst()
+				.orElse(null);
 	}
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) throws EmployeePayrollServiceException {
-		List<EmployeePayrollData> employeePayrollDataList = new EmployeePayrollDBService().getEmployeePayrollDataFromDB(name);
+		List<EmployeePayrollData> employeePayrollDataList = new EmployeePayrollDBService()
+				.getEmployeePayrollDataFromDB(name);
 		return employeePayrollDataList.get(1).equals(getEmployeePayrollData(name));
-	}		
+	}
+
+	public List<EmployeePayrollData> getEmployeeDataBetweenTwoDates(LocalDate startDate, LocalDate endDate)
+			throws EmployeePayrollServiceException {
+		employeePayrollList = employeePayrollDBService.getEmployeeDataBetweenTwoDates(startDate, endDate);
+		return employeePayrollList;
+	}
 }

@@ -46,7 +46,7 @@ public class EmployeePayrollDBService {
 		} catch (SQLException e) {
 			throw new EmployeePayrollServiceException(
 					EmployeePayrollServiceException.EmployeePayrollExceptionType.EMPLOYEE_DATA_RETRIEVE_ISSUE,
-													"Unable to retrieve data from the data base!!");
+					"Unable to retrieve data from the data base!!");
 		}
 		return employeePayrollDataList;
 	}
@@ -70,7 +70,7 @@ public class EmployeePayrollDBService {
 		} catch (SQLException e) {
 			throw new EmployeePayrollServiceException(
 					EmployeePayrollServiceException.EmployeePayrollExceptionType.PREPARE_STATEMENT_ISSUE,
-								"Unable to get data by prepared statement");
+					"Unable to get data by prepared statement");
 		}
 	}
 
@@ -101,7 +101,7 @@ public class EmployeePayrollDBService {
 	public int updateEmployeePayrollDataUsingPreparedStatement(String name, double salary)
 			throws EmployeePayrollServiceException {
 		if (this.preparedStatement == null) {
-			this.prepareStatementForEmployeePayroll();
+			this.prepareStatementForUpdateSalaryInEmployeePayroll();
 		}
 		try {
 			preparedStatement.setDouble(1, salary);
@@ -115,7 +115,7 @@ public class EmployeePayrollDBService {
 		}
 	}
 
-	private void prepareStatementForEmployeePayroll() throws EmployeePayrollServiceException {
+	private void prepareStatementForUpdateSalaryInEmployeePayroll() throws EmployeePayrollServiceException {
 		try (Connection connection = this.getConnection()) {
 			String sql = "UPDATE employee_payroll SET salary=? WHERE name=?";
 			this.preparedStatement = connection.prepareStatement(sql);
@@ -123,6 +123,31 @@ public class EmployeePayrollDBService {
 			throw new EmployeePayrollServiceException(
 					EmployeePayrollServiceException.EmployeePayrollExceptionType.PREPARE_STATEMENT_ISSUE,
 					"Unable to get data by prepared statement");
+		}
+
+	}
+
+	public List<EmployeePayrollData> getEmployeeDataBetweenTwoDates(LocalDate startDate, LocalDate endDate)
+			throws EmployeePayrollServiceException {
+		List<EmployeePayrollData> employeePayrollList = new ArrayList<EmployeePayrollData>();
+		String sql = String.format(
+				"SELECT * FROM employee_payroll WHERE start BETWEEN cast('%s' as date) and cast('%s' as date);",
+				startDate.toString(), endDate.toString());
+		try (Connection connection = this.getConnection()) {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				int id = resultSet.getInt("id");
+				String Employeename = resultSet.getString("name");
+				double salary = resultSet.getDouble("salary");
+				LocalDate start = resultSet.getDate("start").toLocalDate();
+				employeePayrollList.add(new EmployeePayrollData(id, Employeename, salary, start));
+			}
+			return employeePayrollList;
+		} catch (SQLException e) {
+			throw new EmployeePayrollServiceException(
+					EmployeePayrollServiceException.EmployeePayrollExceptionType.EMPLOYEE_DATA_RETRIEVE_ISSUE,
+					"Unable to get data");
 		}
 
 	}

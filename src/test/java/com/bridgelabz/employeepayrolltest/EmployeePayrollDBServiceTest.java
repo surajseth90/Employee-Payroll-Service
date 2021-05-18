@@ -1,5 +1,6 @@
 package com.bridgelabz.employeepayrolltest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.Assert;
@@ -34,4 +35,13 @@ public class EmployeePayrollDBServiceTest {
 		Assert.assertTrue(result);
 	}
 
+	@Test
+	public void givenEmployeePayrollData_WhenRetrievedBasedOnStartDate_ShouldReturnResult()
+			throws EmployeePayrollServiceException {
+		employeePayrollService.readEmployeePayrollData();
+		LocalDate startDate = LocalDate.parse("2021-04-07");
+		LocalDate endDate = LocalDate.now();
+		List<EmployeePayrollData> list = employeePayrollService.getEmployeeDataBetweenTwoDates(startDate, endDate);
+		Assert.assertEquals(list.get(1), employeePayrollService.getEmployeePayrollData("Harry"));
+	}
 }
