@@ -62,5 +62,10 @@ public class EmployeePayrollService {
 		return this.employeePayrollDBService.addEmployee(name, gender, salary, start);
 
 	}
+	public EmployeePayrollData addEmployeeToPayrollDatabase(String name, String gender, double salary, LocalDate start)
+			throws EmployeePayrollServiceException {
+		return this.employeePayrollDBService.addEmployeeToPayroll(name, gender, salary, start);
+
+	}
 
 }

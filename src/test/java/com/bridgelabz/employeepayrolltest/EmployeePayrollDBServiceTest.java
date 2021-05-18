@@ -60,4 +60,13 @@ public class EmployeePayrollDBServiceTest {
 	        boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Harry");
 	        Assert.assertTrue(result);
 	    }
+	 
+	 @Test
+	    public void addingNewEmployee_WhenAdded_ShouldSyncWithDB() throws EmployeePayrollServiceException {
+	    	EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+	    	employeePayrollService.readEmployeePayrollData();
+	    	employeePayrollService.addEmployeeToPayrollDatabase("Naman","M", 350000.0, LocalDate.now());
+	        boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Naman");
+	        Assert.assertTrue(result);
+	    }
 }
