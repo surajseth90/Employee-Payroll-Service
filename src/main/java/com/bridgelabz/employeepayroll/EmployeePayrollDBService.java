@@ -8,7 +8,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EmployeePayrollDBService {
 
@@ -18,7 +20,7 @@ public class EmployeePayrollDBService {
 	public EmployeePayrollDBService() {
 
 	}
-
+	
 	private Connection getConnection() throws SQLException {
 		String jdbcURL = "jdbc:mysql://localhost:3306/employee_payroll_service?useSSL=false";
 		String userName = "root";
@@ -148,6 +150,26 @@ public class EmployeePayrollDBService {
 			throw new EmployeePayrollServiceException(
 					EmployeePayrollServiceException.EmployeePayrollExceptionType.EMPLOYEE_DATA_RETRIEVE_ISSUE,
 					"Unable to get data");
+		}
+
+	}
+	
+	public Map<String , Double> arithematicOperationsOnEmployeePayroll(String operation, String column,String gender)
+			throws EmployeePayrollServiceException {
+		Map<String , Double>arithematicOpertionMap = new HashMap<>();
+		String sql = String.format(
+				"SELECT %s(%s) FROM employee_payroll WHERE gender = %s GROUP BY gender;",operation,column,gender);
+		try (Connection connection = this.getConnection()) {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				arithematicOpertionMap.put(resultSet.getString(1), resultSet.getDouble(2));
+			}
+			return arithematicOpertionMap;
+		} catch (SQLException e) {
+			throw new EmployeePayrollServiceException(
+					EmployeePayrollServiceException.EmployeePayrollExceptionType.ARITHMETIC_OPERATION_ISSUE,
+					"Unable to perform arithematic operation");
 		}
 
 	}
