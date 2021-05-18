@@ -2,6 +2,7 @@ package com.bridgelabz.employeepayroll;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -10,6 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeePayrollDBService {
+
+	private static EmployeePayrollDBService employeePayrollDBService;
+	private PreparedStatement preparedStatement;
+	
+
+	public EmployeePayrollDBService() {
+		
+	}
 
 	private Connection getConnection() throws SQLException {
 		String jdbcURL = "jdbc:mysql://localhost:3306/employee_payroll_service?useSSL=false";
@@ -52,7 +61,7 @@ public class EmployeePayrollDBService {
 		} catch (SQLException e) {
 			throw new EmployeePayrollServiceException(
 					EmployeePayrollServiceException.EmployeePayrollExceptionType.UPDATION_ISSUE,
-					"Unable To update data in database");
+				                	"Unable To update data in database");
 		}
 	}
 
@@ -73,8 +82,36 @@ public class EmployeePayrollDBService {
 		} catch (SQLException e) {
 			throw new EmployeePayrollServiceException(
 					EmployeePayrollServiceException.EmployeePayrollExceptionType.UPDATION_ISSUE,
-					"Unable to get data from database");
+									"Unable to get data from database");
 		}
 	}
 
+	public int updateEmployeePayrollDataUsingPreparedStatement(String name, double salary)
+			throws EmployeePayrollServiceException {
+		if (this.preparedStatement == null) {
+			this.prepareStatementForEmployeePayroll();
+		}
+		try {
+			preparedStatement.setDouble(1, salary);
+			preparedStatement.setString(2, name);
+			int rowsAffected = preparedStatement.executeUpdate();
+			return rowsAffected;
+		} catch (SQLException e) {
+			throw new EmployeePayrollServiceException(
+					EmployeePayrollServiceException.EmployeePayrollExceptionType.PREPARE_STATEMENT_ISSUE,
+									"Unable to get data by prepared statement");
+		}
+	}
+
+	private void prepareStatementForEmployeePayroll() throws EmployeePayrollServiceException {
+		try (Connection connection = this.getConnection()) {
+			String sql = "UPDATE employee_payroll SET salary=? WHERE name=?";
+			this.preparedStatement = connection.prepareStatement(sql);
+		} catch (SQLException e) {
+			throw new EmployeePayrollServiceException(
+					EmployeePayrollServiceException.EmployeePayrollExceptionType.PREPARE_STATEMENT_ISSUE,
+									"Unable to get data by prepared statement");
+		}
+
+	}
 }

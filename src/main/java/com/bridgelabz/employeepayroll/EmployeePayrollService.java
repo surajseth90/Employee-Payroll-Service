@@ -19,6 +19,15 @@ public class EmployeePayrollService {
 		if (employeePayrollData != null)
 			employeePayrollData.setEmployeeSalary(salary);
 	}
+	
+	public void updateEmployeeSalaryUsingPrepareStatement(String name, double salary) throws EmployeePayrollServiceException {
+		int result = new EmployeePayrollDBService().updateEmployeePayrollDataUsingPreparedStatement(name, salary);
+		if (result == 0)
+			return;
+		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
+		if (employeePayrollData != null)
+			employeePayrollData.setEmployeeSalary(salary);
+	}
 
 	private EmployeePayrollData getEmployeePayrollData(String name) {
 		return this.employeePayrollList.stream()

@@ -4,7 +4,7 @@ package com.bridgelabz.employeepayroll;
 public class EmployeePayrollServiceException extends Exception {
 
 	public enum EmployeePayrollExceptionType {
-		EMPLOYEE_DATA_RETRIEVE_ISSUE, UPDATION_ISSUE;
+		EMPLOYEE_DATA_RETRIEVE_ISSUE, UPDATION_ISSUE, PREPARE_STATEMENT_ISSUE;
 	}
 
 	public EmployeePayrollExceptionType type;
