@@ -1,8 +1,8 @@
 package com.bridgelabz.employeepayroll;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class EmployeePayrollService {
 
@@ -17,6 +17,7 @@ public class EmployeePayrollService {
 		int result = new EmployeePayrollDBService().updateEmployeeDataUsingStatement(name, salary);
 		if (result == 0)
 			return;
+		employeePayrollList = employeePayrollDBService.readData();
 		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
 		if (employeePayrollData != null)
 			employeePayrollData.setEmployeeSalary(salary);
@@ -25,8 +26,10 @@ public class EmployeePayrollService {
 	public void updateEmployeeSalaryUsingPrepareStatement(String name, double salary)
 			throws EmployeePayrollServiceException {
 		int result = new EmployeePayrollDBService().updateEmployeePayrollDataUsingPreparedStatement(name, salary);
+		System.out.println(result);
 		if (result == 0)
 			return;
+		employeePayrollList = employeePayrollDBService.readData();
 		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
 		if (employeePayrollData != null)
 			employeePayrollData.setEmployeeSalary(salary);
@@ -41,7 +44,7 @@ public class EmployeePayrollService {
 	public boolean checkEmployeePayrollInSyncWithDB(String name) throws EmployeePayrollServiceException {
 		List<EmployeePayrollData> employeePayrollDataList = new EmployeePayrollDBService()
 				.getEmployeePayrollDataFromDB(name);
-		return employeePayrollDataList.get(1).equals(getEmployeePayrollData(name));
+		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
 
 	public List<EmployeePayrollData> getEmployeeDataBetweenTwoDates(LocalDate startDate, LocalDate endDate)
@@ -49,4 +52,10 @@ public class EmployeePayrollService {
 		employeePayrollList = employeePayrollDBService.getEmployeeDataBetweenTwoDates(startDate, endDate);
 		return employeePayrollList;
 	}
+
+	public Map<String, Double> arithematicOperationByGender(String operation)
+			throws EmployeePayrollServiceException {
+		return this.employeePayrollDBService.arithematicOperationsOnEmployeePayroll(operation);
+	}
+
 }

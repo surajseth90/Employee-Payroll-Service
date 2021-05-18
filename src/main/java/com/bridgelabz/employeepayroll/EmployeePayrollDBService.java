@@ -14,13 +14,8 @@ import java.util.Map;
 
 public class EmployeePayrollDBService {
 
-	private static EmployeePayrollDBService employeePayrollDBService;
 	private PreparedStatement preparedStatement;
 
-	public EmployeePayrollDBService() {
-
-	}
-	
 	private Connection getConnection() throws SQLException {
 		String jdbcURL = "jdbc:mysql://localhost:3306/employee_payroll_service?useSSL=false";
 		String userName = "root";
@@ -70,6 +65,7 @@ public class EmployeePayrollDBService {
 			}
 			return employeePayrollList;
 		} catch (SQLException e) {
+			e.printStackTrace();
 			throw new EmployeePayrollServiceException(
 					EmployeePayrollServiceException.EmployeePayrollExceptionType.PREPARE_STATEMENT_ISSUE,
 					"Unable to get data by prepared statement");
@@ -77,7 +73,8 @@ public class EmployeePayrollDBService {
 	}
 
 	private void preparedStatementForRetrieveDataUsingName() throws EmployeePayrollServiceException {
-		try (Connection connection = this.getConnection()) {
+		try {
+			Connection connection = this.getConnection();
 			String sql = "SELECT * FROM employee_payroll WHERE name=?";
 			this.preparedStatement = connection.prepareStatement(sql);
 		} catch (SQLException e) {
@@ -111,6 +108,7 @@ public class EmployeePayrollDBService {
 			int rowsAffected = preparedStatement.executeUpdate();
 			return rowsAffected;
 		} catch (SQLException e) {
+			e.printStackTrace();
 			throw new EmployeePayrollServiceException(
 					EmployeePayrollServiceException.EmployeePayrollExceptionType.PREPARE_STATEMENT_ISSUE,
 					"Unable to get data by prepared statement");
@@ -118,7 +116,8 @@ public class EmployeePayrollDBService {
 	}
 
 	private void prepareStatementForUpdateSalaryInEmployeePayroll() throws EmployeePayrollServiceException {
-		try (Connection connection = this.getConnection()) {
+		try {
+			Connection connection = this.getConnection();
 			String sql = "UPDATE employee_payroll SET salary=? WHERE name=?";
 			this.preparedStatement = connection.prepareStatement(sql);
 		} catch (SQLException e) {
@@ -153,20 +152,22 @@ public class EmployeePayrollDBService {
 		}
 
 	}
-	
-	public Map<String , Double> arithematicOperationsOnEmployeePayroll(String operation, String column,String gender)
+
+	public Map<String, Double> arithematicOperationsOnEmployeePayroll(String operation)
 			throws EmployeePayrollServiceException {
-		Map<String , Double>arithematicOpertionMap = new HashMap<>();
-		String sql = String.format(
-				"SELECT %s(%s) FROM employee_payroll WHERE gender = %s GROUP BY gender;",operation,column,gender);
+		Map<String, Double> arithematicOpertionMap = new HashMap<>();
+		String sql = String.format("SELECT Gender, %s(salary) FROM employee_payroll GROUP BY Gender;", operation);
 		try (Connection connection = this.getConnection()) {
 			Statement statement = connection.createStatement();
 			ResultSet resultSet = statement.executeQuery(sql);
 			while (resultSet.next()) {
-				arithematicOpertionMap.put(resultSet.getString(1), resultSet.getDouble(2));
+				String gender = resultSet.getString("Gender");
+				Double salary = resultSet.getDouble(2);
+				arithematicOpertionMap.put(gender, salary);
 			}
 			return arithematicOpertionMap;
 		} catch (SQLException e) {
+			e.printStackTrace();
 			throw new EmployeePayrollServiceException(
 					EmployeePayrollServiceException.EmployeePayrollExceptionType.ARITHMETIC_OPERATION_ISSUE,
 					"Unable to perform arithematic operation");

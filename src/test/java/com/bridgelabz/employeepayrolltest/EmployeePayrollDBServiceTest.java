@@ -2,6 +2,7 @@ package com.bridgelabz.employeepayrolltest;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class EmployeePayrollDBServiceTest {
 
 	@Test
 	public void givenNewSalaryOfEmployee_WhenUpdated_ShouldSyncWithDatabase() throws EmployeePayrollServiceException {
-		employeePayrollService.updateEmployeeSalary("Bill", 300000.0);
+		employeePayrollService.updateEmployeeSalary("Bill", 300000);
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Bill");
 		Assert.assertTrue(result);
 	}
@@ -42,6 +43,12 @@ public class EmployeePayrollDBServiceTest {
 		LocalDate startDate = LocalDate.parse("2021-04-07");
 		LocalDate endDate = LocalDate.now();
 		List<EmployeePayrollData> list = employeePayrollService.getEmployeeDataBetweenTwoDates(startDate, endDate);
-		Assert.assertEquals(list.get(1), employeePayrollService.getEmployeePayrollData("Harry"));
+		Assert.assertEquals(list.get(0), employeePayrollService.getEmployeePayrollData("Suraj"));
+	}
+	
+	@Test
+	public void givenEmployeeData_WhenPerformArithematicOperation_ShouldReturnResult() throws EmployeePayrollServiceException {
+		Map<String ,Double> result= employeePayrollService.arithematicOperationByGender("SUM");
+		Assert.assertEquals(1200000,result.get("M"),0.0);
 	}
 }
