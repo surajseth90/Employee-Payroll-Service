@@ -32,7 +32,7 @@ public class EmployeePayrollDBService {
 
 	public List<EmployeePayrollData> readData() throws EmployeePayrollServiceException {
 		String sql = "SELECT * FROM  employee_payroll;";
-		List<EmployeePayrollData> employeePayrollList = new ArrayList<>();
+		List<EmployeePayrollData> employeePayrollDataList = new ArrayList<>();
 		try (Connection connection = this.getConnection()) {
 			Statement statement = connection.createStatement();
 			ResultSet result = statement.executeQuery(sql);
@@ -41,14 +41,14 @@ public class EmployeePayrollDBService {
 				String name = result.getString("name");
 				double salary = result.getDouble("salary");
 				LocalDate joiningDate = result.getDate("start").toLocalDate();
-				employeePayrollList.add(new EmployeePayrollData(id, name, salary, joiningDate));
+				employeePayrollDataList.add(new EmployeePayrollData(id, name, salary, joiningDate));
 			}
 		} catch (SQLException e) {
 			throw new EmployeePayrollServiceException(
 					EmployeePayrollServiceException.EmployeePayrollExceptionType.EMPLOYEE_DATA_RETRIEVE_ISSUE,
-					"Unable to retrieve data from the data base!!");
+													"Unable to retrieve data from the data base!!");
 		}
-		return employeePayrollList;
+		return employeePayrollDataList;
 	}
 
 	public List<EmployeePayrollData> getEmployeePayrollDataFromDB(String name) throws EmployeePayrollServiceException {
@@ -70,7 +70,7 @@ public class EmployeePayrollDBService {
 		} catch (SQLException e) {
 			throw new EmployeePayrollServiceException(
 					EmployeePayrollServiceException.EmployeePayrollExceptionType.PREPARE_STATEMENT_ISSUE,
-					"Unable to get data by prepared statement");
+								"Unable to get data by prepared statement");
 		}
 	}
 
