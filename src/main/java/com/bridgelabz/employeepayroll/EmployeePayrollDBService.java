@@ -25,8 +25,7 @@ public class EmployeePayrollDBService {
 	public List<EmployeePayrollData> readData() throws EmployeePayrollServiceException {
 		String sql = "SELECT * FROM  employee_payroll;";
 		List<EmployeePayrollData> employeePayrollList = new ArrayList<>();
-		try {
-			Connection connection = this.getConnection();
+		try (Connection connection = this.getConnection()) {
 			Statement statement = connection.createStatement();
 			ResultSet result = statement.executeQuery(sql);
 			while (result.next()) {
@@ -35,13 +34,47 @@ public class EmployeePayrollDBService {
 				double salary = result.getDouble("salary");
 				LocalDate joiningDate = result.getDate("start").toLocalDate();
 				employeePayrollList.add(new EmployeePayrollData(id, name, salary, joiningDate));
-
 			}
-			connection.close();
 		} catch (SQLException e) {
-			throw new EmployeePayrollServiceException("Unable to retrieve data from the data base!!");
+			throw new EmployeePayrollServiceException(
+					EmployeePayrollServiceException.EmployeePayrollExceptionType.EMPLOYEE_DATA_RETRIEVE_ISSUE,
+					"Unable to retrieve data from the data base!!");
 		}
 		return employeePayrollList;
-
 	}
+
+	public int updateEmployeeDataUsingStatement(String name, double salary) throws EmployeePayrollServiceException {
+		String sql = String.format("UPDATE employee_payroll SET salary=%.2f WHERE name='%s'", salary, name);
+		try (Connection connection = this.getConnection()) {
+			Statement statement = connection.createStatement();
+			int rowsAffected = statement.executeUpdate(sql);
+			return rowsAffected;
+		} catch (SQLException e) {
+			throw new EmployeePayrollServiceException(
+					EmployeePayrollServiceException.EmployeePayrollExceptionType.UPDATION_ISSUE,
+					"Unable To update data in database");
+		}
+	}
+
+	public List<EmployeePayrollData> getEmployeePayrollDataFromDB(String name) throws EmployeePayrollServiceException {
+		String sql = String.format("SELECT * FROM employee_payroll WHERE name='%s'", name);
+		List<EmployeePayrollData> employeePayrollList = new ArrayList<EmployeePayrollData>();
+		try (Connection connection = this.getConnection()) {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				int id = resultSet.getInt("id");
+				String Employeename = resultSet.getString("name");
+				double salary = resultSet.getDouble("salary");
+				LocalDate start = resultSet.getDate("start").toLocalDate();
+				employeePayrollList.add(new EmployeePayrollData(id, Employeename, salary, start));
+			}
+			return employeePayrollList;
+		} catch (SQLException e) {
+			throw new EmployeePayrollServiceException(
+					EmployeePayrollServiceException.EmployeePayrollExceptionType.UPDATION_ISSUE,
+					"Unable to get data from database");
+		}
+	}
+
 }
