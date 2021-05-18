@@ -56,4 +56,28 @@ public class EmployeePayrollData {
 				+ employeeSalary + ", employeeJoiningDate=" + employeeJoiningDate + "]";
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null || getClass() != obj.getClass())
+			return false;
+		EmployeePayrollData that = (EmployeePayrollData) obj;
+		if (employeeID != that.employeeID)
+			return false;
+		if (employeeName == null) {
+			if (that.employeeName != null)
+				return false;
+		} else if (!employeeName.equals(that.employeeName))
+			return false;
+		if (Double.doubleToLongBits(employeeSalary) != Double.doubleToLongBits(that.employeeSalary))
+			return false;
+		if (employeeJoiningDate == null) {
+			if (that.employeeJoiningDate != null)
+				return false;
+		} else if (!employeeJoiningDate.equals(that.employeeJoiningDate))
+			return false;
+		return true;
+	}
+
 }
